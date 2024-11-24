@@ -12,6 +12,21 @@ urls = re.findall(pattern, rss_feed)
 
 print(f"Number of URLs found: {len(urls)}")
 
+# Step 2.1: Extract titles using regex
+#title_pattern = r"title='(\d+) 個意見'"
+#titles = re.findall(title_pattern, rss_feed)
+
+#print(f"Number of titles found: {len(titles)}")
+
+#print(titles)
+
+# Step 2.2: Extract comment counts using regex
+comment_pattern = r"href='(https://chenling3\.blogspot\.com/[^<>]+\.html)#comment-form' title='(\d+) 個意見'/>"
+comments = re.findall(comment_pattern, rss_feed)
+
+print(f"Number of comments found: {len(comments)}")
+#print(comments[0][0])
+
 # Step 2.5: Extract updated dates using regex
 updated_pattern = r"<updated>([^<>]+)</updated>"
 updated_dates = re.findall(updated_pattern, rss_feed)
@@ -67,7 +82,7 @@ for i, url in enumerate(urls):
         continue
     var_j=var_j+1
     html_template += f"""
-            <a class="item" onclick="loadIframe('{url}','{updated_dates[var_j]}')">
+            <a class="item" onclick="loadIframe('{url}','{updated_dates[var_j]}','{comments[var_j-1][0]}',{comments[var_j-1][1]})">
                 Link {i + 1}
             </a>
     """
@@ -80,11 +95,11 @@ html_template += """
         <iframe id="iframe" src=""></iframe>
     </div>
     <script>
-        function loadIframe(url,j) {
+        function loadIframe(url,j,comment_url,comment_count) {
             document.getElementById('iframe-container').innerHTML = `
             <iframe id="iframe" src="${url}"></iframe>   
             <div class="ui floating visible message" style="position: absolute; left: 48vw; top: 0;">
-                <p>${j}</p>
+                <p>${j}</p><a href="${comment_url}">${comment_count} comments</a>
             </div>
             `;
         }
