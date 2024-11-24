@@ -10,6 +10,15 @@ rss_feed = response.text
 pattern = r"https://andythebreaker\.github\.io/InClassTestPaper/#[^&]+"
 urls = re.findall(pattern, rss_feed)
 
+print(f"Number of URLs found: {len(urls)}")
+
+# Step 2.5: Extract updated dates using regex
+updated_pattern = r"<updated>([^<>]+)</updated>"
+updated_dates = re.findall(updated_pattern, rss_feed)
+
+print(f"Number of updated dates found: {len(updated_dates)}")
+#print(updated_dates)
+
 # Step 3: Generate HTML with Semantic-UI structure
 html_template = f"""
 <!DOCTYPE html>
@@ -52,11 +61,13 @@ html_template = f"""
 """
 
 # Add menu items for each URL
+var_j = 0
 for i, url in enumerate(urls):
     if i > 0 and url == urls[i - 1]:
         continue
+    var_j=var_j+1
     html_template += f"""
-            <a class="item" onclick="loadIframe('{url}')">
+            <a class="item" onclick="loadIframe('{url}','{updated_dates[var_j]}')">
                 Link {i + 1}
             </a>
     """
@@ -69,8 +80,13 @@ html_template += """
         <iframe id="iframe" src=""></iframe>
     </div>
     <script>
-        function loadIframe(url) {
-            document.getElementById('iframe-container').innerHTML = `<iframe id="iframe" src="${url}"></iframe>`;
+        function loadIframe(url,j) {
+            document.getElementById('iframe-container').innerHTML = `
+            <iframe id="iframe" src="${url}"></iframe>   
+            <div class="ui floating visible message" style="position: absolute; left: 48vw; top: 0;">
+                <p>${j}</p>
+            </div>
+            `;
         }
     </script>
 </body>
